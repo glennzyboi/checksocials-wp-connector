@@ -41,6 +41,11 @@ before it reaches WordPress, which breaks Application-Password authentication en
 would already affect publishing, not just this plugin. If verification isn't completing
 automatically, check with your host whether `Authorization` headers are passed through to PHP.
 
+If your site uses full-page caching (WP Rocket, W3 Total Cache, or a managed host's built-in
+cache), the verification tag can take a moment to appear on the cached page, so the very first
+automatic check may miss it. That's harmless — CheckSocials falls back to a "try again" step,
+and clicking it once the cache has refreshed completes verification.
+
 ## License
 
 GPL-2.0-or-later
