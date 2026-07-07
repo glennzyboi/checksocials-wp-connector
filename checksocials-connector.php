@@ -1,13 +1,16 @@
 <?php
 /**
  * Plugin Name: CheckSocials Connector
+ * Plugin URI: https://checksocials.com
  * Description: Lets CheckSocials automatically verify this site with Google Search Console. No setup required — it authenticates using the same WordPress Application Password you already gave CheckSocials to publish articles.
- * Version: 1.0.1
+ * Version: 1.0.2
  * Requires at least: 5.6
  * Requires PHP: 7.2
  * Author: CheckSocials
- * License: GPL-2.0-or-later
- * Update URI: false
+ * Author URI: https://checksocials.com
+ * License: GPLv2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
+ * Text Domain: checksocials-connector
  */
 
 if (!defined('ABSPATH')) {
@@ -16,7 +19,7 @@ if (!defined('ABSPATH')) {
 
 const CHECKSOCIALS_GSC_TAG_OPTION = 'checksocials_gsc_tag';
 const CHECKSOCIALS_NS = 'checksocials/v1';
-const CHECKSOCIALS_VERSION = '1.0.1';
+const CHECKSOCIALS_VERSION = '1.0.2';
 
 /**
  * Inject the Google Search Console verification meta tag into <head>. This is
@@ -45,6 +48,19 @@ function checksocials_can_manage(): bool
 }
 
 /**
+ * A Google site-verification token: base64url-style characters only. Anything
+ * else (markup, spaces, full meta tags) is rejected — callers must send just
+ * the content value.
+ */
+function checksocials_validate_tag($value): bool
+{
+    return is_string($value)
+        && $value !== ''
+        && strlen($value) <= 200
+        && preg_match('/^[A-Za-z0-9_=-]+$/', $value) === 1;
+}
+
+/**
  * Health check: confirms the plugin is installed, active, and reachable with
  * the caller's credentials.
  */
@@ -60,8 +76,12 @@ function checksocials_status(): WP_REST_Response
 function checksocials_store_tag(WP_REST_Request $request)
 {
     $tag = trim((string) $request->get_param('tag'));
-    if ($tag === '') {
-        return new WP_Error('checksocials_bad_tag', 'Empty verification tag.', ['status' => 400]);
+    if (!checksocials_validate_tag($tag)) {
+        return new WP_Error(
+            'checksocials_bad_tag',
+            __('Invalid verification tag: send only the google-site-verification content value.', 'checksocials-connector'),
+            ['status' => 400]
+        );
     }
     update_option(CHECKSOCIALS_GSC_TAG_OPTION, $tag);
     return new WP_REST_Response(['ok' => true], 200);
@@ -79,6 +99,14 @@ function checksocials_register_routes(): void
         'methods'             => 'POST',
         'permission_callback' => 'checksocials_can_manage',
         'callback'            => 'checksocials_store_tag',
+        'args'                => [
+            'tag' => [
+                'type'              => 'string',
+                'required'          => true,
+                'sanitize_callback' => 'sanitize_text_field',
+                'validate_callback' => 'checksocials_validate_tag',
+            ],
+        ],
     ]);
 }
 add_action('rest_api_init', 'checksocials_register_routes');
