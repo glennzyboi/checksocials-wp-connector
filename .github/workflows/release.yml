@@ -1,0 +1,34 @@
+# Builds the installable plugin zip and attaches it to a GitHub release
+# whenever a version tag (v*) is pushed. The CheckSocials app links to
+# .../releases/latest/download/checksocials-connector.zip, so the asset name
+# and the folder inside the zip must stay exactly "checksocials-connector".
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Lint PHP syntax
+        run: php -l checksocials-connector.php && php -l uninstall.php
+
+      - name: Build plugin zip
+        run: |
+          mkdir -p build/checksocials-connector
+          cp checksocials-connector.php readme.txt uninstall.php build/checksocials-connector/
+          cd build && zip -r ../checksocials-connector.zip checksocials-connector
+
+      - name: Create release with asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" checksocials-connector.zip \
+            --title "$GITHUB_REF_NAME" --generate-notes
