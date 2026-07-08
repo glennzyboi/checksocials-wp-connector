@@ -2,9 +2,9 @@
 Contributors: checksocials
 Tags: search console, site verification, seo, google
 Requires at least: 5.6
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 7.2
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -50,6 +50,9 @@ Yes — delete the Application Password under Users → Profile → Application 
 No. It prints one meta tag in your site's `<head>` and registers two admin-only REST routes. Nothing runs on normal page views beyond that single tag.
 
 == Changelog ==
+
+= 1.0.3 =
+* Compatibility: tested up to WordPress 7.0 (verified with the official Plugin Check).
 
 = 1.0.2 =
 * WordPress.org directory readiness: strict input validation and sanitization on the verification endpoint, translatable strings with text domain, complete plugin headers.

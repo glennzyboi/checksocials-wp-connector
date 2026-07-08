@@ -3,7 +3,7 @@
  * Plugin Name: CheckSocials Connector
  * Plugin URI: https://checksocials.com
  * Description: Lets CheckSocials automatically verify this site with Google Search Console. No setup required — it authenticates using the same WordPress Application Password you already gave CheckSocials to publish articles.
- * Version: 1.0.2
+ * Version: 1.0.3
  * Requires at least: 5.6
  * Requires PHP: 7.2
  * Author: CheckSocials
@@ -19,7 +19,7 @@ if (!defined('ABSPATH')) {
 
 const CHECKSOCIALS_GSC_TAG_OPTION = 'checksocials_gsc_tag';
 const CHECKSOCIALS_NS = 'checksocials/v1';
-const CHECKSOCIALS_VERSION = '1.0.2';
+const CHECKSOCIALS_VERSION = '1.0.3';
 
 /**
  * Inject the Google Search Console verification meta tag into <head>. This is
